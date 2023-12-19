@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workshop/base_view/custom_button.dart';
+import 'package:workshop/model/item_model.dart';
 import 'package:workshop/provider/user_cart_provider.dart';
 import 'package:workshop/utils/color_resources.dart';
 import 'package:workshop/utils/custom_style.dart';
@@ -10,6 +11,7 @@ import 'package:workshop/view/item_grid_view.dart';
 import 'package:workshop/view/loader_view.dart';
 
 import '../model/user.dart';
+import '../view/custom_image_picker.dart';
 
 class UserCartsScreen extends StatefulWidget {
   const UserCartsScreen({
@@ -22,6 +24,8 @@ class UserCartsScreen extends StatefulWidget {
 
 class _UserCartsScreenState extends State<UserCartsScreen> {
   User? workshop;
+  Item? item;
+  String selectedImage = "";
 
   @override
   void initState() {
@@ -69,21 +73,39 @@ class _UserCartsScreenState extends State<UserCartsScreen> {
                         // _TitleTextWidget(
                         //     title: "Bank Name",
                         //     text: workshop!.bname.toString()),
+                        Column(
+                          children: [
+                            const Text('Upload Attachment here'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CustomImagePicker(
+                                    isAttachmentPicker: true,
+                                    imagePickerCallback: (path) {
+                                      selectedImage = path;
+                                      setState(() {});
+                                    },
+                                    selectedImage: selectedImage),
+                              ],
+                            ),
+                          ],
+                        ),
                         SizedBox(
                           width: getScreenWidth(context),
                           child: CustomButton(
                               text: "Place Order",
                               color: getPrimaryColor(context),
                               onClick: () {
-                                value.placeOrder(context);
+                                if (selectedImage.isEmpty) {
+                                  infoSnackBar(
+                                      context, 'please upload attachment here');
+                                } else {
+                                  value.placeOrder(context, selectedImage);
+                                }
                               }),
                         ),
                         SizedBox(
                           height: getWidthMargin(context, 5),
-                        ),
-                        const Text(
-                          "Cash on Delivery",
-                          style: titleHeader,
                         ),
                       ],
                     );

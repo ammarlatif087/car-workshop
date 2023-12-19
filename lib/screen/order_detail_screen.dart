@@ -204,7 +204,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         title: "Not Of Items",
                         text: widget.orderModel.items.length.toString()),
                     _TitleTextWidget(
-                        title: "Payment", text: widget.orderModel.paymentType),
+                      title: "Payment Proof",
+                      text: '',
+                    ),
+                    CustomImage(
+                        image: widget.orderModel.proofUrl,
+                        height: 200,
+                        width: 200),
                     const SizedBox(
                       height: 5,
                     ),

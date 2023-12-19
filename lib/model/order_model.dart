@@ -10,7 +10,7 @@ class OrderModel {
   late String date;
   late String time;
   late String status;
-  late String paymentType;
+  late String proofUrl;
 
   OrderModel();
 
@@ -38,7 +38,7 @@ class OrderModel {
     date = data['date'];
     status = data['status'];
     time = data['time'];
-    paymentType = data['paymentType'];
+    proofUrl = data['paymentType'];
 
     items = [];
 
@@ -55,7 +55,7 @@ class OrderModel {
       "status": status,
       'user_id': userId,
       'workshop_id': workshopId,
-      'paymentType': paymentType,
+      'paymentType': proofUrl,
       'items': items.map((e) => e.toJson()).toList(),
     };
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:workshop/model/cart_model.dart';
@@ -14,21 +16,30 @@ class UserCartProvider extends ChangeNotifier {
 
   List<CartModel> carts = [];
 
-  void placeOrder(BuildContext context) {
-    OrderModel orderModel = OrderModel();
-    orderModel.items = carts;
-    orderModel.userId = getUserId();
-    orderModel.workshopId = carts[0].workshopId;
-    orderModel.date = getCurrentDate();
-    orderModel.time = getCurrentTime();
-    orderModel.status = "Pending";
-    orderModel.paymentType = 'Cash on delivery';
-    getProvider<UserOrderProvider>(context).placeOrder(context, orderModel);
-    for (var element in carts) {
-      databaseReference.child(element.id).remove();
-    }
-    carts.clear();
-    notifyListeners();
+  void placeOrder(BuildContext context, String proofUrl) {
+    uploadFile(
+      'attach',
+      File(proofUrl),
+      onSuccessCallback: (data) {
+        OrderModel orderModel = OrderModel();
+        orderModel.items = carts;
+        orderModel.userId = getUserId();
+        orderModel.workshopId = carts[0].workshopId;
+        orderModel.date = getCurrentDate();
+        orderModel.time = getCurrentTime();
+        orderModel.status = "Pending";
+        orderModel.proofUrl = data;
+        getProvider<UserOrderProvider>(context).placeOrder(context, orderModel);
+        for (var element in carts) {
+          databaseReference.child(element.id).remove();
+        }
+        carts.clear();
+        notifyListeners();
+      },
+      onErrorCallback: (onErrorCallback) {
+        infoSnackBar(context, "Something went wrong");
+      },
+    );
   }
 
   List<Item> getItems() {
