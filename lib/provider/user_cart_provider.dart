@@ -17,6 +17,10 @@ class UserCartProvider extends ChangeNotifier {
   List<CartModel> carts = [];
 
   void placeOrder(BuildContext context, String proofUrl) {
+    // Set loading to true before starting the upload
+    isLoading = true;
+    notifyListeners();
+
     uploadFile(
       'attach',
       File(proofUrl),
@@ -29,6 +33,11 @@ class UserCartProvider extends ChangeNotifier {
         orderModel.time = getCurrentTime();
         orderModel.status = "Pending";
         orderModel.proofUrl = data;
+
+        // Update loading to false before placing the order
+        isLoading = false;
+        notifyListeners();
+
         getProvider<UserOrderProvider>(context).placeOrder(context, orderModel);
         for (var element in carts) {
           databaseReference.child(element.id).remove();
@@ -37,6 +46,10 @@ class UserCartProvider extends ChangeNotifier {
         notifyListeners();
       },
       onErrorCallback: (onErrorCallback) {
+        // Update loading to false in case of an error
+        isLoading = false;
+        notifyListeners();
+
         infoSnackBar(context, "Something went wrong");
       },
     );
